@@ -1,0 +1,258 @@
+-- =========================================
+-- LIBRARY MANAGEMENT SYSTEM
+-- COMPLETE SQL SOLUTION
+-- =========================================
+
+-- =========================================
+-- 1. CREATE DATABASE
+-- =========================================
+
+CREATE DATABASE Library;
+
+-- =========================================
+-- 2. USE DATABASE
+-- =========================================
+
+USE Library;
+
+-- =========================================
+-- 3. CREATE TABLES
+-- =========================================
+
+-- LANGUAGE TABLE
+CREATE TABLE LANGUAGE
+(
+    Language_Id NUMBER PRIMARY KEY,
+    Name VARCHAR2(50)
+);
+
+-- PUBLISHER TABLE
+CREATE TABLE PUBLISHER
+(
+    Publisher_Id NUMBER PRIMARY KEY,
+    Name VARCHAR2(100),
+    Address VARCHAR2(200)
+);
+
+-- AUTHOR TABLE
+CREATE TABLE AUTHOR
+(
+    Author_Id NUMBER PRIMARY KEY,
+    Name VARCHAR2(100),
+    Email VARCHAR2(100),
+    Phone_Number VARCHAR2(15),
+    Status VARCHAR2(20)
+);
+
+-- BOOK TABLE
+CREATE TABLE BOOK
+(
+    Book_Id NUMBER PRIMARY KEY,
+    Title VARCHAR2(100),
+    Language_Id NUMBER,
+    MRP NUMBER(10,2),
+    Publisher_Id NUMBER,
+    Published_Date DATE,
+    Volume NUMBER,
+    Status VARCHAR2(20),
+
+    CONSTRAINT fk_language
+    FOREIGN KEY (Language_Id)
+    REFERENCES LANGUAGE(Language_Id),
+
+    CONSTRAINT fk_publisher
+    FOREIGN KEY (Publisher_Id)
+    REFERENCES PUBLISHER(Publisher_Id)
+);
+
+-- BOOK_AUTHOR TABLE
+CREATE TABLE BOOK_AUTHOR
+(
+    Book_Id NUMBER,
+    Author_Id NUMBER,
+
+    PRIMARY KEY(Book_Id, Author_Id),
+
+    CONSTRAINT fk_book
+    FOREIGN KEY(Book_Id)
+    REFERENCES BOOK(Book_Id),
+
+    CONSTRAINT fk_author
+    FOREIGN KEY(Author_Id)
+    REFERENCES AUTHOR(Author_Id)
+);
+
+-- MEMBER TABLE
+CREATE TABLE MEMBER
+(
+    Member_Id NUMBER PRIMARY KEY,
+    Name VARCHAR2(100),
+    Branch_Code VARCHAR2(20),
+    Roll_Number VARCHAR2(20),
+    Phone_Number VARCHAR2(15),
+    Email_Id VARCHAR2(100),
+    Date_Of_Join DATE,
+    Status VARCHAR2(20)
+);
+
+-- BOOK_ISSUE TABLE
+CREATE TABLE BOOK_ISSUE
+(
+    Issue_Id NUMBER PRIMARY KEY,
+    Date_Of_Issue DATE,
+    Book_Id NUMBER,
+    Member_Id NUMBER,
+    Expected_Date_Of_Return DATE,
+    Status VARCHAR2(20),
+
+    CONSTRAINT fk_issue_book
+    FOREIGN KEY(Book_Id)
+    REFERENCES BOOK(Book_Id),
+
+    CONSTRAINT fk_issue_member
+    FOREIGN KEY(Member_Id)
+    REFERENCES MEMBER(Member_Id)
+);
+
+-- BOOK_RETURN TABLE
+CREATE TABLE BOOK_RETURN
+(
+    Issue_Id NUMBER PRIMARY KEY,
+    Actual_Date_Of_Return DATE,
+    LateDays NUMBER,
+    LateFee NUMBER(10,2),
+
+    CONSTRAINT fk_return_issue
+    FOREIGN KEY(Issue_Id)
+    REFERENCES BOOK_ISSUE(Issue_Id)
+);
+
+-- LATE_FEE_RULE TABLE
+CREATE TABLE LATE_FEE_RULE
+(
+    FromDays NUMBER,
+    ToDays NUMBER,
+    Amount NUMBER(10,2),
+
+    PRIMARY KEY(FromDays, ToDays)
+);
+
+-- =========================================
+-- 4. INSERT VALUES
+-- =========================================
+
+-- LANGUAGE
+INSERT INTO LANGUAGE VALUES (1, 'English');
+INSERT INTO LANGUAGE VALUES (2, 'Malayalam');
+INSERT INTO LANGUAGE VALUES (3, 'Hindi');
+
+-- PUBLISHER
+INSERT INTO PUBLISHER VALUES (101, 'DC Books', 'Kottayam');
+INSERT INTO PUBLISHER VALUES (102, 'Penguin', 'Delhi');
+
+-- AUTHOR
+INSERT INTO AUTHOR VALUES
+(1, 'R.K Narayan', 'rk@gmail.com', '9876543210', 'Active');
+
+INSERT INTO AUTHOR VALUES
+(2, 'Basheer', 'basheer@gmail.com', '9876501234', 'Active');
+
+-- BOOK
+INSERT INTO BOOK VALUES
+(1001, 'Malgudi Days', 1, 450, 101,
+TO_DATE('10-01-2020','DD-MM-YYYY'),
+1, 'Available');
+
+INSERT INTO BOOK VALUES
+(1002, 'Pathummayude Aadu', 2, 350, 102,
+TO_DATE('15-05-2019','DD-MM-YYYY'),
+1, 'Available');
+
+-- BOOK_AUTHOR
+INSERT INTO BOOK_AUTHOR VALUES (1001,1);
+INSERT INTO BOOK_AUTHOR VALUES (1002,2);
+
+-- MEMBER
+INSERT INTO MEMBER VALUES
+(201, 'Arun', 'CSE', '21CS001',
+'9999999999',
+'arun@gmail.com',
+TO_DATE('01-06-2024','DD-MM-YYYY'),
+'Active');
+
+INSERT INTO MEMBER VALUES
+(202, 'Rahul', 'ECE', '21EC002',
+'8888888888',
+'rahul@gmail.com',
+TO_DATE('02-06-2024','DD-MM-YYYY'),
+'Active');
+
+-- BOOK_ISSUE
+INSERT INTO BOOK_ISSUE VALUES
+(1,
+TO_DATE('01-07-2024','DD-MM-YYYY'),
+1001,
+201,
+TO_DATE('15-07-2024','DD-MM-YYYY'),
+'Issued');
+
+-- BOOK_RETURN
+INSERT INTO BOOK_RETURN VALUES
+(1,
+TO_DATE('20-07-2024','DD-MM-YYYY'),
+5,
+10);
+
+-- LATE_FEE_RULE
+INSERT INTO LATE_FEE_RULE VALUES (0,7,10);
+INSERT INTO LATE_FEE_RULE VALUES (8,30,100);
+INSERT INTO LATE_FEE_RULE VALUES (31,999,10);
+
+-- =========================================
+-- 5. DISPLAY TABLES
+-- =========================================
+
+SELECT * FROM LANGUAGE;
+SELECT * FROM PUBLISHER;
+SELECT * FROM AUTHOR;
+SELECT * FROM BOOK;
+SELECT * FROM BOOK_AUTHOR;
+SELECT * FROM MEMBER;
+SELECT * FROM BOOK_ISSUE;
+SELECT * FROM BOOK_RETURN;
+SELECT * FROM LATE_FEE_RULE;
+
+-- =========================================
+-- 6. ALTER TABLE - ADD COLUMN
+-- =========================================
+
+ALTER TABLE BOOK
+ADD Genre VARCHAR2(30);
+
+-- =========================================
+-- 7. ALTER TABLE - MODIFY COLUMN
+-- =========================================
+
+ALTER TABLE MEMBER
+MODIFY Phone_Number VARCHAR2(20);
+
+-- =========================================
+-- 8. TRUNCATE TABLE
+-- =========================================
+
+-- First remove child records
+DELETE FROM BOOK;
+
+TRUNCATE TABLE PUBLISHER;
+
+-- =========================================
+-- 9. DROP TABLE
+-- =========================================
+
+DROP TABLE AUTHOR;
+
+-- =========================================
+-- 10. RENAME TABLE
+-- =========================================
+
+RENAME LATE_FEE_RULE TO FINE;
