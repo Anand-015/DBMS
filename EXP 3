@@ -1,0 +1,147 @@
+INSERT INTO Employee VALUES
+(1, 'David Smith', 'HR', 7500);
+
+INSERT INTO Employee VALUES
+(2, 'John Carter', 'Marketing', 6800);
+
+INSERT INTO Employee VALUES
+(3, 'Alice Brown', 'Production', 6200);
+
+INSERT INTO Employee VALUES
+(4, 'Daniel Jose', 'Sales', 8500);
+
+INSERT INTO Employee VALUES
+(5, 'Anita Roy', 'Marketing', 9000);
+-- DISPLAY TABLE
+SELECT * FROM Employee;
+
+-- =====================================
+-- 1. Select employees with salaries
+-- greater than 7000
+-- =====================================
+
+SELECT * FROM Employee
+WHERE Salary > 7000;
+
+-- =====================================
+-- 2. Update salary of David Smith to 8200
+-- =====================================
+
+UPDATE Employee
+SET Salary = 8200
+WHERE Emp_name = 'David Smith';
+
+-- =====================================
+-- 3. Insert new employee
+-- =====================================
+
+INSERT INTO Employee VALUES
+(6, 'Daniel Harris', 'Production', 6700);
+
+-- =====================================
+-- 4. Delete employee with Emp_id = 3
+-- =====================================
+
+DELETE FROM Employee
+WHERE Emp_id = 3;
+
+-- =====================================
+-- 5. Select employees whose names
+-- do not start with D or J
+-- =====================================
+
+SELECT * FROM Employee
+WHERE Emp_name NOT LIKE 'D%'
+AND Emp_name NOT LIKE 'J%';
+
+-- =====================================
+-- 6. Calculate total salary expense
+-- for each department
+-- =====================================
+
+SELECT Dept, SUM(Salary) AS Total_Salary
+FROM Employee
+GROUP BY Dept;
+
+-- =====================================
+-- 7. Increase Production department
+-- salary by 5%
+-- =====================================
+
+UPDATE Employee
+SET Salary = Salary + (Salary * 0.05)
+WHERE Dept = 'Production';
+
+-- =====================================
+-- 8. Delete employees with salary below 7000
+-- =====================================
+
+DELETE FROM Employee
+WHERE Salary < 7000;
+
+-- =====================================
+-- 9. Find employee with lowest salary
+-- =====================================
+
+SELECT Emp_name, Salary
+FROM Employee
+WHERE Salary =
+(
+    SELECT MIN(Salary)
+    FROM Employee
+);
+
+-- =====================================
+-- 10. Update Marketing department
+-- salary to 8200
+-- =====================================
+
+UPDATE Employee
+SET Salary = 8200
+WHERE Dept = 'Marketing';
+
+-- =====================================
+-- 11. Employees starting with A
+-- =====================================
+
+SELECT * FROM Employee
+WHERE Emp_name LIKE 'A%';
+
+-- =====================================
+-- 12. Employee names containing 'it'
+-- =====================================
+
+SELECT Emp_name
+FROM Employee
+WHERE Emp_name LIKE '%it%';
+
+-- =====================================
+-- 13. Departments in uppercase
+-- =====================================
+
+SELECT UPPER(Dept) AS Department
+FROM Employee;
+
+-- =====================================
+-- 14. Department starts with M,
+-- 3rd letter = r,
+-- contains 'ket'
+-- =====================================
+
+SELECT *
+FROM Employee
+WHERE Dept LIKE 'Ma%ket%';
+
+-- =====================================
+-- 15. Departments in reverse uppercase
+-- without duplicates
+-- =====================================
+
+SELECT DISTINCT REVERSE(UPPER(Dept)) AS Reverse_Dept
+FROM Employee;
+
+-- =====================================
+-- FINAL DISPLAY
+-- =====================================
+
+SELECT * FROM Employee;
