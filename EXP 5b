@@ -1,0 +1,328 @@
+CREATE DATABASE AmazonDB;
+
+USE AmazonDB;
+
+-- ======================================
+-- CREATE TABLES
+-- ======================================
+
+CREATE TABLE Items
+(
+    ItemId INT PRIMARY KEY,
+    ItemName VARCHAR(50),
+    Category VARCHAR(50),
+    Price INT,
+    InStock INT
+);
+
+CREATE TABLE Customers
+(
+    CustId INT PRIMARY KEY,
+    CustName VARCHAR(50),
+    Address VARCHAR(100),
+    State VARCHAR(50)
+);
+
+CREATE TABLE Orders
+(
+    OrderId INT PRIMARY KEY,
+    ItemId INT,
+    CustId INT,
+    Quantity INT,
+    OrderDate DATE,
+
+    FOREIGN KEY(ItemId)
+    REFERENCES Items(ItemId),
+
+    FOREIGN KEY(CustId)
+    REFERENCES Customers(CustId)
+);
+
+CREATE TABLE Delivery
+(
+    DeliveryId INT PRIMARY KEY,
+    CustId INT,
+    OrderId INT,
+
+    FOREIGN KEY(CustId)
+    REFERENCES Customers(CustId),
+
+    FOREIGN KEY(OrderId)
+    REFERENCES Orders(OrderId)
+);
+
+-- ======================================
+-- INSERT VALUES INTO ITEMS
+-- ======================================
+
+INSERT INTO Items VALUES
+(1, 'Samsung Galaxy S4', 'Mobile', 25000, 10);
+
+INSERT INTO Items VALUES
+(2, 'iPhone 14', 'Mobile', 70000, 5);
+
+INSERT INTO Items VALUES
+(3, 'Dell Laptop', 'Laptop', 55000, 3);
+
+INSERT INTO Items VALUES
+(4, 'Boat Headset', 'Accessories', 2000, 20);
+
+INSERT INTO Items VALUES
+(5, 'HP Printer', 'Printer', 8000, 4);
+
+-- ======================================
+-- INSERT VALUES INTO CUSTOMERS
+-- ======================================
+
+INSERT INTO Customers VALUES
+(101, 'John', 'MG Road', 'Kerala');
+
+INSERT INTO Customers VALUES
+(102, 'Mickey', 'Park Street', 'Tamil Nadu');
+
+INSERT INTO Customers VALUES
+(103, 'David', 'Marine Drive', 'Karnataka');
+
+INSERT INTO Customers VALUES
+(104, 'Anu', '5th Avenue', 'Delhi');
+
+INSERT INTO Customers VALUES
+(105, 'James', 'Lake View', 'Goa');
+
+-- ======================================
+-- INSERT VALUES INTO ORDERS
+-- ======================================
+
+INSERT INTO Orders VALUES
+(1001, 1, 101, 1, '2015-02-10');
+
+INSERT INTO Orders VALUES
+(1002, 2, 102, 1, '2015-03-15');
+
+INSERT INTO Orders VALUES
+(1003, 3, 103, 2, '2014-12-20');
+
+INSERT INTO Orders VALUES
+(1004, 4, 104, 3, '2016-01-25');
+
+INSERT INTO Orders VALUES
+(1005, 2, 102, 1, '2015-05-18');
+
+-- ======================================
+-- INSERT VALUES INTO DELIVERY
+-- ======================================
+
+INSERT INTO Delivery VALUES
+(1, 101, 1001);
+
+INSERT INTO Delivery VALUES
+(2, 102, 1002);
+
+INSERT INTO Delivery VALUES
+(3, 103, 1003);
+
+-- ======================================
+-- DISPLAY TABLES
+-- ======================================
+
+SELECT * FROM Items;
+SELECT * FROM Customers;
+SELECT * FROM Orders;
+SELECT * FROM Delivery;
+
+-- ======================================
+-- 1. Customers who placed an order
+-- ======================================
+
+SELECT DISTINCT Customers.*
+FROM Customers
+JOIN Orders
+ON Customers.CustId = Orders.CustId;
+
+-- ======================================
+-- 2. Customers whose orders delivered
+-- ======================================
+
+SELECT DISTINCT Customers.*
+FROM Customers
+JOIN Delivery
+ON Customers.CustId = Delivery.CustId;
+
+-- ======================================
+-- 3. Order date for customers
+-- whose name starts with J
+-- ======================================
+
+SELECT Orders.OrderDate
+FROM Orders
+JOIN Customers
+ON Orders.CustId = Customers.CustId
+WHERE Customers.CustName LIKE 'J%';
+
+-- ======================================
+-- 4. Item name and price bought by Mickey
+-- ======================================
+
+SELECT Items.ItemName, Items.Price
+FROM Items
+JOIN Orders
+ON Items.ItemId = Orders.ItemId
+JOIN Customers
+ON Orders.CustId = Customers.CustId
+WHERE Customers.CustName = 'Mickey';
+
+-- ======================================
+-- 5. Customers placed order after Jan 2015
+-- and not received delivery
+-- ======================================
+
+SELECT DISTINCT Customers.*
+FROM Customers
+JOIN Orders
+ON Customers.CustId = Orders.CustId
+WHERE Orders.OrderDate > '2015-01-01'
+AND Customers.CustId NOT IN
+(
+    SELECT CustId
+    FROM Delivery
+);
+
+-- ======================================
+-- 6. Items ordered or not delivered
+-- using UNION
+-- ======================================
+
+SELECT ItemName
+FROM Items
+WHERE ItemId IN
+(
+    SELECT ItemId
+    FROM Orders
+)
+
+UNION
+
+SELECT ItemName
+FROM Items
+WHERE ItemId NOT IN
+(
+    SELECT Orders.ItemId
+    FROM Orders
+    JOIN Delivery
+    ON Orders.OrderId = Delivery.OrderId
+);
+
+-- ======================================
+-- 7. Customers placed order but
+-- not delivered using MINUS logic
+-- ======================================
+
+SELECT CustName
+FROM Customers
+WHERE CustId IN
+(
+    SELECT CustId FROM Orders
+)
+
+AND CustId NOT IN
+(
+    SELECT CustId FROM Delivery
+);
+
+-- ======================================
+-- 8. Customers placed order and delivered
+-- using INTERSECT logic
+-- ======================================
+
+SELECT CustName
+FROM Customers
+WHERE CustId IN
+(
+    SELECT CustId FROM Orders
+)
+
+AND CustId IN
+(
+    SELECT CustId FROM Delivery
+);
+
+-- ======================================
+-- 9. Customer with most orders
+-- ======================================
+
+SELECT Customers.CustName
+FROM Customers
+JOIN Orders
+ON Customers.CustId = Orders.CustId
+GROUP BY Customers.CustName
+ORDER BY COUNT(*) DESC
+LIMIT 1;
+
+-- ======================================
+-- 10. Customers purchased items
+-- exceeding 5000
+-- ======================================
+
+SELECT DISTINCT Customers.*
+FROM Customers
+JOIN Orders
+ON Customers.CustId = Orders.CustId
+JOIN Items
+ON Orders.ItemId = Items.ItemId
+WHERE Items.Price > 5000;
+
+-- ======================================
+-- 11. Customers who did not order
+-- Samsung Galaxy S4
+-- ======================================
+
+SELECT CustName, Address
+FROM Customers
+WHERE CustId NOT IN
+(
+    SELECT Orders.CustId
+    FROM Orders
+    JOIN Items
+    ON Orders.ItemId = Items.ItemId
+    WHERE Items.ItemName = 'Samsung Galaxy S4'
+);
+
+-- ======================================
+-- 12. LEFT OUTER JOIN
+-- ======================================
+
+SELECT *
+FROM Customers
+LEFT JOIN Orders
+ON Customers.CustId = Orders.CustId;
+
+-- ======================================
+-- 13. RIGHT OUTER JOIN
+-- ======================================
+
+SELECT *
+FROM Customers
+RIGHT JOIN Orders
+ON Customers.CustId = Orders.CustId;
+
+-- ======================================
+-- 14. Customers grouped by state
+-- ======================================
+
+SELECT State, COUNT(*) AS Total_Customers
+FROM Customers
+GROUP BY State;
+
+-- ======================================
+-- 15. Items grouped by category
+-- having price greater than average
+-- ======================================
+
+SELECT Category, AVG(Price) AS AvgPrice
+FROM Items
+GROUP BY Category
+HAVING AVG(Price) >
+(
+    SELECT AVG(Price)
+    FROM Items
+);
