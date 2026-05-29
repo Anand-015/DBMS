@@ -1,0 +1,160 @@
+CREATE DATABASE School;
+
+USE School;
+
+-- ======================================
+-- CREATE TABLE
+-- ======================================
+
+CREATE TABLE Student
+(
+    RollNo INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Physics INT,
+    Chemistry INT,
+    Mathematics INT
+);
+
+-- ======================================
+-- INSERT VALUES
+-- ======================================
+
+INSERT INTO Student VALUES
+(1, 'Arun', 20, 18, 45);
+
+INSERT INTO Student VALUES
+(2, 'Rahul', 10, 15, 35);
+
+INSERT INTO Student VALUES
+(3, 'Anu', 24, 22, 49);
+
+INSERT INTO Student VALUES
+(4, 'David', 14, 11, 20);
+
+INSERT INTO Student VALUES
+(5, 'Meera', 19, 20, 40);
+
+INSERT INTO Student VALUES
+(6, 'John', 8, 10, 15);
+
+INSERT INTO Student VALUES
+(7, 'Anjali', 16, 18, 30);
+
+INSERT INTO Student VALUES
+(8, 'Neethu', 22, 24, 48);
+
+INSERT INTO Student VALUES
+(9, 'Ravi', 13, 14, 27);
+
+INSERT INTO Student VALUES
+(10, 'Alan', 25, 25, 50);
+
+-- DISPLAY TABLE
+SELECT * FROM Student;
+
+-- ======================================
+-- 1. Class average for Physics
+-- ======================================
+
+SELECT AVG(Physics) AS Avg_Physics
+FROM Student;
+
+-- ======================================
+-- 2. Highest mark in Mathematics
+-- ======================================
+
+SELECT MAX(Mathematics) AS highest_mark_maths
+FROM Student;
+
+-- ======================================
+-- 3. Lowest marks for Chemistry
+-- ======================================
+
+SELECT MIN(Chemistry) AS lowest_mark_chemistry
+FROM Student;
+
+-- ======================================
+-- 4. Total students passed in Physics
+-- Pass mark = 12
+-- ======================================
+
+SELECT COUNT(*) AS Pass_Physics
+FROM Student
+WHERE Physics >= 12;
+
+-- ======================================
+-- 5. Students passed in all subjects
+-- Physics >=12
+-- Chemistry >=12
+-- Mathematics >=25
+-- ======================================
+
+SELECT *
+FROM Student
+WHERE Physics >= 12
+AND Chemistry >= 12
+AND Mathematics >= 25;
+
+-- ======================================
+-- 6. Rank list with Pass/Fail
+-- ======================================
+
+SELECT
+Name,
+(Physics + Chemistry + Mathematics) AS Total,
+CASE
+    WHEN Physics >= 12
+    AND Chemistry >= 12
+    AND Mathematics >= 25
+    THEN 'PASS'
+    ELSE 'FAIL'
+END AS Result
+FROM Student
+ORDER BY Total DESC;
+
+-- ======================================
+-- 7. Pass percentage for all classes
+-- ======================================
+
+SELECT
+(COUNT(
+    CASE
+        WHEN Physics >=12
+        AND Chemistry >=12
+        AND Mathematics >=25
+        THEN 1
+    END
+) * 100.0 / COUNT(*)) AS Pass_Percentage
+FROM Student;
+
+-- ======================================
+-- 8. Pass percentage in Mathematics
+-- ======================================
+
+SELECT
+(COUNT(
+    CASE
+        WHEN Mathematics >=25
+        THEN 1
+    END
+) * 100.0 / COUNT(*)) AS Maths_Pass_Percentage
+FROM Student;
+
+-- ======================================
+-- 9. Class average
+-- ======================================
+
+SELECT
+AVG((Physics + Chemistry + Mathematics)/3.0)
+AS Class_Average
+FROM Student;
+
+-- ======================================
+-- 10. Total students passed
+-- ======================================
+
+SELECT COUNT(*) AS Total_Passed
+FROM Student
+WHERE Physics >=12
+AND Chemistry >=12
+AND Mathematics >=25;
